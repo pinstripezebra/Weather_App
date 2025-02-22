@@ -8,6 +8,8 @@ import pandas as pd
 import os 
 from dotenv import find_dotenv, load_dotenv
 import json
+from utility.data_query import data_pipeline
+import flask
 
 
 
@@ -19,16 +21,16 @@ repull_data = True
 
 
 # defining path
-parent_path = os.path.dirname(os.path.dirname(__file__))
-
+path = os.path.dirname(__file__)
+print(path)
 # loading Data
 df1 = data_pipeline(repull_data, LATITUDE, LONGITUDE)
 
 # Loading json files containing component styles
 SIDEBAR_STYLE , CONTENT_STYLE = {}, {}
-with open(parent_path + '/style/sidebar_style.json') as f:
+with open(path + '/style/sidebar_style.json') as f:
     SIDEBAR_STYLE = json.load(f)
-with open(parent_path + '/style/content_style.json') as f:
+with open(path + '/style/content_style.json') as f:
     CONTENT_STYLE = json.load(f)
 
 
