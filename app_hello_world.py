@@ -1,4 +1,4 @@
-from dash import Dash, html
+from dash import Dash, html, dbc
 
 
 app = Dash(__name__, use_pages=True, external_stylesheets=[dbc.themes.BOOTSTRAP], assets_folder='assets', assets_url_path='/assets/')

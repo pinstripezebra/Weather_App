@@ -50,11 +50,10 @@ layout = html.Div([
 @callback(
     Output(component_id='geo_plot', component_property='children'),
     Input('response_var_filter', 'value'),
-    Input('stored-forecast', 'data'),
-    Input('location-storage', 'data')
+    Input('stored-forecast', 'data')
     
 )
-def update_timeseries(filter_var, df, location):
+def update_timeseries(filter_var, df):
 
     filtered_df = pd.read_json(df, orient='split')
     filtered_df['time'] = pd.to_datetime(filtered_df['time'])

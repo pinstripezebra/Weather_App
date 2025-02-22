@@ -10,7 +10,7 @@ from dotenv import find_dotenv, load_dotenv
 import json
 from utility.data_query import data_pipeline
 import flask
-
+from utility.measurement import find_optimal_window
 
 
 # loading environmental variables
@@ -22,7 +22,6 @@ repull_data = True
 
 # defining path
 path = os.path.dirname(__file__)
-print(path)
 # loading Data
 df1 = data_pipeline(repull_data, LATITUDE, LONGITUDE)
 
@@ -37,6 +36,13 @@ with open(path + '/style/content_style.json') as f:
 # defining and Initializing the app
 server = flask.Flask(__name__)
 app = Dash(__name__, use_pages=True, external_stylesheets=[dbc.themes.BOOTSTRAP], assets_folder='assets', assets_url_path='/assets/', server = server)
+acceptable_pages = ['Home1', 'Maps1']
+
+# defining optimal conditions to compare against weather forecast
+optimal_conditions = {'temperature_2m': 30,
+                      'cloudcover': 0.1,
+                      'windspeed_10m': 0.1,
+                      'precipitation_probability': 0.1}
 
 # Defining components
 sidebar = html.Div(children = [
@@ -49,7 +55,7 @@ sidebar = html.Div(children = [
             html.Hr(),
             html.Div([ 
                 dbc.Nav([
-                    dbc.NavLink(f"{page['name']}", href = page["relative_path"]) for page in dash.page_registry.values()
+                    dbc.NavLink(f"{page['name']}", href = page["relative_path"]) for page in dash.page_registry.values() if page["name"]  in acceptable_pages
                 ], vertical=True)
 
             ]),
@@ -78,12 +84,46 @@ sidebar = html.Div(children = [
     )
 
 
-app.layout = html.Div([sidebar,
-    html.Div([
-            dash.page_container
-    ], style=CONTENT_STYLE)
+# definign layout with dcc.store component to ensure all pages have access to weather forecast
+app.layout = html.Div([
+        dcc.Store(id='stored-forecast', storage_type='local'), # for storing weather forecast in dataframe
+        dcc.Store(id='optimal-conditions', storage_type='local'),
+        html.Div([sidebar,
+        html.Div([
+                dash.page_container
+        ], style=CONTENT_STYLE)
+    ])
+
 ])
 
+
+# Callback function to pull weather forecast data and store it for use on pages
+@callback(
+    [Output('stored-forecast', 'data'),
+     Output('optimal-conditions', 'data')],
+    [Input('login-button', 'n_clicks')])
+
+def login_button_click(n_clicks):
+
+    # Logging forecast to store for consumption in other pages
+    repull_data = True
+    df1 = data_pipeline(repull_data, LATITUDE, LONGITUDE)
+    df1['time'] = df1.index
+    df1.reset_index(drop = True)
+    df1['time'] = pd.to_datetime(df1['time'])
+    forecasted_conditions = {'temperature_2m': df1['temperature_2m'].to_list(),
+                            'cloudcover': df1['cloudcover'].to_list(),
+                            'windspeed_10m': df1['windspeed_10m'].to_list(),
+                            'precipitation_probability': df1['precipitation_probability'].to_list()}
+
+    # Rating weather conditions and adding overall score to dataframe
+    conditions = find_optimal_window(optimal_conditions, forecasted_conditions, LATITUDE, LONGITUDE)
+    df1['Forecast_Score'] = conditions['Score'].to_list()
+
+            
+    # navigate to landing page if logged in successfully 
+    return df1.to_json(date_format='iso', orient='split'), optimal_conditions
+       
 
 
 # Running the app
