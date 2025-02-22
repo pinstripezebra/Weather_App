@@ -22,7 +22,7 @@ repull_data = True
 
 # defining path
 path = os.path.dirname(__file__)
-
+print(path)
 # loading Data
 df1 = data_pipeline(repull_data, LATITUDE, LONGITUDE)
 
@@ -37,7 +37,6 @@ with open(path + '/style/content_style.json') as f:
 # defining and Initializing the app
 server = flask.Flask(__name__)
 app = Dash(__name__, use_pages=True, external_stylesheets=[dbc.themes.BOOTSTRAP], assets_folder='assets', assets_url_path='/assets/', server = server)
-acceptable_pages = ['Home', 'Maps']
 
 # Defining components
 sidebar = html.Div(children = [
@@ -50,7 +49,7 @@ sidebar = html.Div(children = [
             html.Hr(),
             html.Div([ 
                 dbc.Nav([
-                    dbc.NavLink(f"{page['name']}", href = page["relative_path"]) for page in dash.page_registry.values() if page["name"]  in acceptable_pages
+                    dbc.NavLink(f"{page['name']}", href = page["relative_path"]) for page in dash.page_registry.values()
                 ], vertical=True)
 
             ]),

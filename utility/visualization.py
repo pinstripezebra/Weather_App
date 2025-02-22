@@ -18,8 +18,6 @@ graph_card_style = {
     'background':'LightGray'
 }
 
-df = pd.read_csv('./Data/test.csv')
-
 def generate_run_plot(df, target_col):
 
     '''takes input dictionary and displays next 12 hours of values on a clock'''

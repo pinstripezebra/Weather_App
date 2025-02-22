@@ -10,14 +10,6 @@ import os
 def makelist(count):
     return [randint(1, 100) for _ in range(count)]
 
-test_optimal = {'temperature_2m': 20,
-        'cloudcover': 5,
-        'windspeed_10m': 0}
-
-test_forecast = {'temperature_2m':makelist(200),
-                 'cloudcover': makelist(200),
-                 'windspeed_10m': makelist(200)
-}
 
 def measure_running_conditions(optimal_values, forecasted_values):
 
@@ -71,10 +63,6 @@ def find_optimal_window(optimal_conditions, forecasted_conditions, max_window):
 
 
 
-# Testing function
-#score = find_optimal_window(test_optimal, test_forecast, 1000)
-#print(score)
-
 def return_nightimes(df, x):
 
     """takes input series of dates and returns a series two lists
@@ -126,4 +114,22 @@ def get_current_conditions(df):
     }
     return output
 
+def convert_to_am_pm(hour: str):
+
+    """Converts 24-hour time to 12-hour AM/PM format."""
+
+    # removing leading 0 and converting to int
+    hour_converted = hour
+    if hour[0] == "0":
+        hour_converted = int(hour[1])
+    else:
+        hour_converted = int(hour)
+
+
+    if 0 < hour_converted <= 12:
+        return f"{hour_converted} AM"
+    elif hour == 0:
+        return "12 AM"
+    else:
+        return f"{hour_converted - 12} PM"
 
