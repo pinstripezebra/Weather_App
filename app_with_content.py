@@ -87,11 +87,12 @@ sidebar = html.Div(children = [
 # definign layout with dcc.store component to ensure all pages have access to weather forecast
 app.layout = html.Div([
         dcc.Store(id='stored-forecast', storage_type='local'), # for storing weather forecast in dataframe
-        dcc.Store(id='optimal-conditions', storage_type='local'),
+        dcc.Store(id='optimal-conditions', storage_type='local'), # for storing ideal conditions for user
+        dcc.Store(id='location-storage', storage_type='local'), # for storing users latitude/longitude
         html.Div([sidebar,
         html.Div([
                 dash.page_container
-        ], style=CONTENT_STYLE)
+        ])
     ])
 
 ])
@@ -100,7 +101,8 @@ app.layout = html.Div([
 # Callback function to pull weather forecast data and store it for use on pages
 @callback(
     [Output('stored-forecast', 'data'),
-     Output('optimal-conditions', 'data')],
+     Output('optimal-conditions', 'data'),
+     Input('location-storage', 'data')],
     [Input('login-button', 'n_clicks')])
 
 def login_button_click(n_clicks):
@@ -119,10 +121,11 @@ def login_button_click(n_clicks):
     # Rating weather conditions and adding overall score to dataframe
     conditions = find_optimal_window(optimal_conditions, forecasted_conditions, LATITUDE, LONGITUDE)
     df1['Forecast_Score'] = conditions['Score'].to_list()
-
+    location = {'latitude': LATITUDE,
+                        'longitude': LONGITUDE}
             
     # navigate to landing page if logged in successfully 
-    return df1.to_json(date_format='iso', orient='split'), optimal_conditions
+    return df1.to_json(date_format='iso', orient='split'), optimal_conditions, location
        
 
 

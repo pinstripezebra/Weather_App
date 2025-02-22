@@ -63,7 +63,7 @@ def find_optimal_window(optimal_conditions, forecasted_conditions, max_window):
 
 
 
-def return_nightimes(df, x):
+def return_nightimes(df, x, location):
 
     """takes input series of dates and returns a series two lists
     one of daytime start and one of nightime start to span series"""
@@ -71,8 +71,8 @@ def return_nightimes(df, x):
     # loading environmental variables
     dotenv_path = find_dotenv()
     load_dotenv(dotenv_path)
-    LATITUDE = float(os.getenv("LATITUDE"))
-    LONGITUDE = float(os.getenv("LONGITUDE"))
+    LATITUDE = location['latitude']
+    LONGITUDE = location['longitude']
     df = df.sort_values(by = 'time', ascending = True)
     
     # sunrise/sunset times
