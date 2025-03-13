@@ -84,7 +84,7 @@ sidebar = html.Div(children = [
     )
 
 
-# definign layout with dcc.store component to ensure all pages have access to weather forecast
+# defining layout with dcc.store component to ensure all pages have access to weather forecast
 app.layout = html.Div([
         dcc.Store(id='stored-forecast', storage_type='local'), # for storing weather forecast in dataframe
         dcc.Store(id='optimal-conditions', storage_type='local'), # for storing ideal conditions for user
