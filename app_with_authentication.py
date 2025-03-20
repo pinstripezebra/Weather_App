@@ -9,7 +9,6 @@ import numpy as np
 from dotenv import find_dotenv, load_dotenv
 import json
 from utility.data_query import data_pipeline, retrieve_users, retrieve_user_from_db, insert_user
-import dash_auth
 import flask
 from flask_login import LoginManager, UserMixin, login_user, logout_user, current_user
 import time
